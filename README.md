@@ -1,1 +1,1 @@
-"# Research" 
+This project develops an explainable machine learning-based credit risk prediction system to identify borrowers who are likely to default on a loan. It predicts the applicant's risk level and recommends a safe loan amount and affordable EMI based on their financial profile, enabling more accurate and transparent lending decisions.
