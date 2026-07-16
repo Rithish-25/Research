@@ -1,0 +1,9 @@
+loan risk prediction
+
+live server = http://127.0.0.1:3000/
+
+backend 
+python -m uvicorn main:app --port 8000 --reload
+
+frontend
+python -m http.server 3000

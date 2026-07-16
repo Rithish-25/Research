@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Risk Prediction System</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>CreditGuard AI</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a class="menu-item active" data-target="dashboard">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="menu-item" data-target="assessment">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                        <span>New Assessment</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="menu-item" data-target="logs">
+                        <i class="fa-solid fa-list-ul"></i>
+                        <span>Assessment Logs</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-avatar">RA</div>
+                <div class="user-info">
+                    <span class="user-name">Risk Analyst</span>
+                    <span class="user-role">Risk Operations</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            
+            <!-- Dashboard View -->
+            <section id="dashboard" class="view-panel active">
+                <div class="header">
+                    <div class="header-title">
+                        <h1>Credit Risk Dashboard</h1>
+                        <p>Real-time analytics and defaults oversight system</p>
+                    </div>
+                </div>
+
+                <!-- KPI Widgets Grid -->
+                <div class="stats-grid">
+                    <div class="glass-panel stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Total Applications</span>
+                            <div class="stat-icon accent">
+                                <i class="fa-solid fa-folder-open"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="kpi-total">0</div>
+                        <div class="stat-sub">Across all loan portfolios</div>
+                    </div>
+                    <div class="glass-panel stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Approval Recommend</span>
+                            <div class="stat-icon success">
+                                <i class="fa-solid fa-check-circle"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="kpi-approvals">0%</div>
+                        <div class="stat-sub">Risk criteria met (< 30% prob)</div>
+                    </div>
+                    <div class="glass-panel stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">High Risk Flagged</span>
+                            <div class="stat-icon danger">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="kpi-warnings">0</div>
+                        <div class="stat-sub">Default risk > 50% flagged</div>
+                    </div>
+                    <div class="glass-panel stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Avg Credit Score</span>
+                            <div class="stat-icon warning">
+                                <i class="fa-solid fa-gauge"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="kpi-credit">0</div>
+                        <div class="stat-sub">Average of assessed applicants</div>
+                    </div>
+                </div>
+
+                <!-- Detailed Widgets -->
+                <div class="dashboard-details-grid">
+                    <div class="glass-panel details-card">
+                        <div class="details-header">
+                            <h2 class="details-title">Recent Assessed Applications</h2>
+                            <button class="btn btn-secondary" onclick="document.querySelector('[data-target=logs]').click()">View All</button>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Applicant</th>
+                                        <th>Loan Details</th>
+                                        <th>Income</th>
+                                        <th>Risk %</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboard-recent-rows">
+                                    <!-- Dynamic rows -->
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; color: var(--text-secondary);">No applications processed yet.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel details-card">
+                        <div class="details-header">
+                            <h2 class="details-title">Loan Intent Share</h2>
+                        </div>
+                        <div style="flex-grow:1; display:flex; flex-direction:column; justify-content:center; gap: 14px;" id="intent-share-container">
+                            <!-- Distribution of loan intents -->
+                            <div style="text-align: center; color: var(--text-secondary)">No intents loaded yet.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- New Assessment Form View -->
+            <section id="assessment" class="view-panel">
+                <div class="header">
+                    <div class="header-title">
+                        <h1>New Credit Risk Assessment</h1>
+                        <p>Analyze applicant profile to calculate default risk & recommended terms</p>
+                    </div>
+                </div>
+
+                <div class="assessment-layout">
+                    <!-- Input Form Panel -->
+                    <form id="assessment-form" class="glass-panel" style="padding: 28px;">
+                        
+                        <!-- Section 1: Demographics -->
+                        <div class="form-section-title">1. Personal Profile</div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="person_age">Age (Years)</label>
+                                <input type="number" id="person_age" required min="18" max="100" placeholder="e.g. 28">
+                            </div>
+                            <div class="form-group">
+                                <label for="person_gender">Gender</label>
+                                <select id="person_gender" required>
+                                    <option value="" disabled selected>Select</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="person_education">Education Level</label>
+                                <select id="person_education" required>
+                                    <option value="" disabled selected>Select</option>
+                                    <option value="High School">High School</option>
+                                    <option value="Associate">Associate Degree</option>
+                                    <option value="Bachelor">Bachelor Degree</option>
+                                    <option value="Master">Master Degree</option>
+                                    <option value="Doctorate">Doctorate</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="person_home_ownership">Home Ownership</label>
+                                <select id="person_home_ownership" required>
+                                    <option value="" disabled selected>Select</option>
+                                    <option value="RENT">Rent</option>
+                                    <option value="MORTGAGE">Mortgage</option>
+                                    <option value="OWN">Own</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Section 2: Finances & Credit -->
+                        <div class="form-section-title">2. Financial & Credit History</div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="person_income">Annual Income ($)</label>
+                                <input type="number" id="person_income" required min="1000" max="10000000" placeholder="e.g. 60000">
+                            </div>
+                            <div class="form-group">
+                                <label for="person_emp_exp">Employment Experience (Years)</label>
+                                <input type="number" id="person_emp_exp" required min="0" max="60" placeholder="e.g. 5">
+                            </div>
+                            <div class="form-group">
+                                <label for="credit_score">Credit Score (FICO)</label>
+                                <input type="number" id="credit_score" required min="300" max="850" placeholder="e.g. 680">
+                            </div>
+                            <div class="form-group">
+                                <label for="cb_person_cred_hist_length">Credit History Length (Years)</label>
+                                <input type="number" id="cb_person_cred_hist_length" required min="0" max="60" placeholder="e.g. 6">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="previous_loan_defaults_on_file">Has Previous Loan Defaults?</label>
+                                <select id="previous_loan_defaults_on_file" required>
+                                    <option value="" disabled selected>Select</option>
+                                    <option value="No">No (Clean Record)</option>
+                                    <option value="Yes">Yes (Prior Default)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Section 3: Loan Details -->
+                        <div class="form-section-title">3. Loan Proposal</div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="loan_amnt">Requested Loan Amount ($)</label>
+                                <input type="number" id="loan_amnt" required min="500" max="1000000" placeholder="e.g. 15000">
+                            </div>
+                            <div class="form-group">
+                                <label for="loan_intent">Loan Purpose</label>
+                                <select id="loan_intent" required>
+                                    <option value="" disabled selected>Select</option>
+                                    <option value="PERSONAL">Personal</option>
+                                    <option value="EDUCATION">Education</option>
+                                    <option value="MEDICAL">Medical</option>
+                                    <option value="VENTURE">Venture / Business</option>
+                                    <option value="HOMEIMPROVEMENT">Home Improvement</option>
+                                    <option value="DEBTCONSOLIDATION">Debt Consolidation</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="loan_int_rate">Interest Rate (%)</label>
+                                <input type="number" id="loan_int_rate" step="0.01" required min="1" max="40" placeholder="e.g. 10.5">
+                            </div>
+                            <div class="form-group">
+                                <label for="loan_percent_income">Debt-to-Income Ratio (%)</label>
+                                <input type="text" id="loan_percent_income" readonly placeholder="Auto-calculated" style="opacity: 0.7;">
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 16px; margin-top: 8px;">
+                            <button type="submit" class="btn" style="flex-grow: 1;">
+                                <i class="fa-solid fa-bolt"></i> Run Risk Analysis
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="btn-reset">Reset</button>
+                        </div>
+                    </form>
+
+                    <!-- Real-Time Evaluation Result Box -->
+                    <div class="glass-panel results-card">
+                        <div class="details-header" style="width: 100%; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 12px;">
+                            <h2 class="details-title">Analysis Result</h2>
+                        </div>
+
+                        <!-- Results Default Placeholder -->
+                        <div id="results-placeholder" class="results-placeholder">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <p>Complete the assessment form and trigger analysis to review predictive flags.</p>
+                        </div>
+
+                        <!-- Active Predictions UI -->
+                        <div id="results-active" class="results-active">
+                            <!-- Arc Gauge -->
+                            <div class="gauge-container">
+                                <svg class="gauge-svg" viewBox="0 0 100 60">
+                                    <path class="gauge-track" d="M15 50 A 35 35 0 0 1 85 50"></path>
+                                    <path id="gauge-fill" class="gauge-fill" d="M15 50 A 35 35 0 0 1 85 50"></path>
+                                </svg>
+                                <div class="gauge-text">
+                                    <div class="gauge-val" id="res-prob">0%</div>
+                                    <div class="gauge-lbl">Probable Risk</div>
+                                </div>
+                            </div>
+
+                            <span class="result-badge" id="res-badge">Pending</span>
+
+                            <!-- Recommendation Panel -->
+                            <div class="analysis-panel">
+                                <div class="analysis-title">
+                                    <i class="fa-solid fa-coins"></i> Loan Recommendation
+                                </div>
+                                <div class="analysis-row">
+                                    <span>Recommended Cap:</span>
+                                    <span class="analysis-val" id="rec-cap">$0</span>
+                                </div>
+                                <div class="analysis-row">
+                                    <span>Affordable EMI:</span>
+                                    <span class="analysis-val text-success" id="rec-emi">$0/mo</span>
+                                </div>
+                                <div class="analysis-row">
+                                    <span>Approval Decision:</span>
+                                    <span class="analysis-val" id="rec-decision">Undetermined</span>
+                                </div>
+                            </div>
+
+                            <!-- Risk Drivers -->
+                            <div class="analysis-panel" style="margin-bottom: 0;">
+                                <div class="analysis-title">
+                                    <i class="fa-solid fa-circle-info"></i> Highlighted Risk Drivers
+                                </div>
+                                <div class="factor-list" id="res-drivers">
+                                    <!-- Dynamic items -->
+                                    <div class="factor-item">
+                                        <i class="fa-solid fa-circle-question"></i> No triggers detected
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Logs History View -->
+            <section id="logs" class="view-panel">
+                <div class="header">
+                    <div class="header-title">
+                        <h1>Historical Assessments Log</h1>
+                        <p>Search, filter, and review historical prediction records</p>
+                    </div>
+                    <button class="btn btn-secondary" id="btn-clear-logs">
+                        <i class="fa-solid fa-trash-can"></i> Clear All Logs
+                    </button>
+                </div>
+
+                <div class="glass-panel" style="padding: 24px;">
+                    <!-- Filter and Search controls -->
+                    <div style="display: flex; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <input type="text" id="log-search" placeholder="Search logs by Intent or Education..." style="width: 320px;">
+                        
+                        <div style="display: flex; gap: 12px;">
+                            <select id="log-filter-status" style="width: 160px;">
+                                <option value="all">All Statuses</option>
+                                <option value="Approved">Approved</option>
+                                <option value="Rejected">Rejected</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Logs Table -->
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date/Time</th>
+                                    <th>Demographics</th>
+                                    <th>Employment</th>
+                                    <th>Loan Amount</th>
+                                    <th>Intent</th>
+                                    <th>Credit Score</th>
+                                    <th>Risk Prob</th>
+                                    <th>Decision</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logs-rows">
+                                <!-- Dynamic JS inserted rows -->
+                                <tr>
+                                    <td colspan="8" style="text-align: center; color: var(--text-secondary);">No assessment records found.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Application Script -->
+    <script src="app.js"></script>
+</body>
+</html>
